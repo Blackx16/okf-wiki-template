@@ -28,11 +28,37 @@ def check_dependencies():
 
 def create_directory_structure(vault_path):
     print("\nCreating directory structure...")
-    dirs = [
-        "raw/articles", "raw/youtube", "raw/notes", "raw/papers", "raw/github", "raw/tutorials",
+    
+    default_raw_dirs = ["articles", "youtube", "notes", "papers", "github", "tutorials"]
+    selected_raw_dirs = default_raw_dirs.copy()
+    
+    is_interactive = sys.stdin.isatty()
+    
+    if is_interactive:
+        print("\n[Raw Directory Setup]")
+        print("By default, the following subdirectories are created in 'raw/':")
+        print(", ".join(default_raw_dirs))
+        
+        keep_defaults = input("Do you want to keep all of these default folders? (Y/n): ").strip().lower()
+        if keep_defaults == 'n':
+            selected_raw_dirs = []
+            for d in default_raw_dirs:
+                ans = input(f"Keep 'raw/{d}'? (Y/n): ").strip().lower()
+                if ans != 'n':
+                    selected_raw_dirs.append(d)
+        
+        custom_dirs_input = input("Enter any additional folders you want to create in 'raw/' (comma-separated, or press Enter to skip): ").strip()
+        if custom_dirs_input:
+            custom_dirs = [d.strip() for d in custom_dirs_input.split(",") if d.strip()]
+            for d in custom_dirs:
+                if d not in selected_raw_dirs:
+                    selected_raw_dirs.append(d)
+    
+    dirs = [f"raw/{d}" for d in selected_raw_dirs] + [
         "wiki/sources", "wiki/concepts", "wiki/entities", "wiki/queries",
         "templates", "assets"
     ]
+    
     for d in dirs:
         dir_path = os.path.join(vault_path, d)
         os.makedirs(dir_path, exist_ok=True)
