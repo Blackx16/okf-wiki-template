@@ -12,29 +12,37 @@ Traditional wikis rely on prose and implicit context, which AI models struggle t
 
 ---
 
-## Quick Start Setup (Highly Automated)
+## Getting Started
 
-We provide an interactive setup wizard to get your vault and agent configured instantly.
+### 1. Clone this repository
+Clone this repository to act as the root of your wiki vault (e.g., in Obsidian).
 
-### 1. Run the Setup Wizard
+### 2. Run the Setup Wizard
 Open your terminal inside this repository and run:
 ```bash
 python3 setup.py
 ```
 This wizard will:
-- Check for system dependencies.
+- Check for system dependencies (Python, Git, Node).
+- Automatically create the full folder structure with `.gitkeep` files.
 - Build your custom `mcp-config.json` containing absolute vault paths.
 - Setup an executable `run_daemon.sh` shell script to run your scheduled agent ticks.
 
-### 2. Configure Your Agent's MCP Servers
+### 3. Configure Your Agent's MCP Servers
 The setup script will output `mcp-config.json`. Merge this configuration into your LLM agent client (e.g. Claude Desktop, Gemini/Antigravity desktop runner).
 
 Supported MCP servers:
 - **`obsidian`**: Connects the agent directly to read/write from the markdown files.
-- **`markitdown`**: Auto-converts PDF, HTML, and office docs to markdown.
+- **`markitdown`**: Auto-converts PDF, HTML, and office docs to markdown (via `uvx markitdown-mcp`).
 - **`youtube-transcript`**: Automatically pulls transcripts for youtube video notes.
 - **`github-official`**: *(Auth Optional)* References and searches public repositories to enrich entity/concept definitions. No GitHub developer account is required unless you want to bypass rate limits or push commits.
-- **`context7`**: Fetches developer docs to build accurate concept profiles.
+- **`context7`**: Fetches developer docs to build accurate concept profiles (via `@upstash/context7-mcp`).
+
+### 4. Deploy the Daemon
+Use `agent_prompt_template.md` to set up a scheduled background task (cron job) that automatically runs `run_daemon.sh` to ingest raw files into your wiki.
+
+### 5. Read the Operating Manual (`AGENTS.md`)
+Open and read [AGENTS.md](AGENTS.md). This is the operating manual for whatever AI agent you use to maintain this wiki. It provides instructions on provenance, linting, and OKF compliance.
 
 ---
 
@@ -45,3 +53,4 @@ Supported MCP servers:
 - `wiki/concepts/`: Living syntheses of abstract ideas across multiple sources.
 - `wiki/entities/`: Centralized metadata about people, orgs, products, or projects.
 - `templates/`: OKF-compliant Markdown templates used by the agent to structure new files.
+- `wiki_health_check.py`: Run this script directly (`python3 wiki_health_check.py`) to generate a full visual audit report of your vault's health (flagging orphans, thin notes, stale files, broken links, and contradictions).

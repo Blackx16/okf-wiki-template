@@ -17,8 +17,9 @@ Prioritize using file management, markdown conversion, and web scraping tools to
 ## §3 ORIENTATION & SCHEMA
 At the start of every tick, read the following to understand the rules, state, and OKF schema:
 1. `system-context.md` (Contains the global dictionary and OKF schema declarations).
-2. `AGENT.md` (Contains the general operating manual).
+2. `AGENTS.md` (Contains the general operating manual).
 3. The last 30 lines of `log.md`.
+4. `wiki/queries/vault-health-report.md` (Contains the latest audit issues).
 
 ## §4 DISCOVERY & BATCHING
 1. Scan all subfolders in `raw/`.
@@ -38,7 +39,8 @@ For each file in your batch:
 4. **Log:** Append an entry to `log.md` in the exact format: `## [YYYY-MM-DD] ingest | Source Title` followed by bullet points of created/updated pages.
 
 ## §6 POST-INGEST & LINTING
-1. **Lint Pass:** Check for 0-byte pages, missing frontmatter `type` fields, missing body source links, or duplicate raw references across the wiki. Ensure all relationships use valid `[[wikilinks]]`.
+1. **Lint Pass:** Run `python3 wiki_health_check.py` to generate `wiki/queries/vault-health-report.md`. Resolve high-priority contradictions, broken links, syntax errors, and integrate orphan notes.
+
 
 ## §7 COMPLETION GATE & GIT COMMIT
 Before finishing, verify that `log.md` is updated.

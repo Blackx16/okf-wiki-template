@@ -2,6 +2,7 @@
 import os
 import sys
 import json
+import argparse
 import subprocess
 
 def check_dependencies():
@@ -16,23 +17,49 @@ def check_dependencies():
         subprocess.run(["git", "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
         print("  - Git: Found")
     except (subprocess.CalledProcessError, FileNotFoundError):
-        print("  - Git: Not Found (Please install git to use all features)")
+        print("  - Git: Not Found (Please install Git for repository tracking)")
 
-def setup_mcp_config(vault_path):
+    # Check for Node/npm/npx (Required for MCP servers)
+    try:
+        subprocess.run(["npx", "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+        print("  - Node/npx: Found")
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        print("  - Warning: Node/npx not found. Most MCP servers require Node.js to be installed.")
+
+def create_directory_structure(vault_path):
+    print("\nCreating directory structure...")
+    dirs = [
+        "raw/articles", "raw/youtube", "raw/notes", "raw/papers", "raw/github", "raw/tutorials",
+        "wiki/sources", "wiki/concepts", "wiki/entities", "wiki/queries",
+        "templates", "assets"
+    ]
+    for d in dirs:
+        dir_path = os.path.join(vault_path, d)
+        os.makedirs(dir_path, exist_ok=True)
+        # Create .gitkeep to ensure empty folders are tracked by git
+        gitkeep_path = os.path.join(dir_path, ".gitkeep")
+        if not os.path.exists(gitkeep_path):
+            with open(gitkeep_path, "w") as f:
+                f.write("")
+    print("✅ Directory structure initialized with .gitkeep files.")
+
+def setup_mcp_config(vault_path, github_token=None, context7_key=None):
     print("\n--- MCP Server Configuration ---")
-    print("This template uses MCP servers to connect your agent to Obsidian, GitHub, transcripts, and docs.")
     
-    # Github configuration
-    print("\n[GitHub MCP Configuration]")
-    print("If you have a GitHub account, you can provide a Personal Access Token (PAT) to avoid rate limits and allow the agent to write/push code.")
-    print("If you do not have an account, or just want to reference public repos without auth, you can leave this blank.")
-    github_token = input("Enter GitHub PAT (optional, press Enter to skip): ").strip()
+    # Check if we are running in an interactive terminal
+    is_interactive = sys.stdin.isatty()
     
-    # Context7 configuration
-    print("\n[Context7 Docs MCP Configuration]")
-    print("Context7 fetches live documentation for coding concepts/libraries.")
-    context7_key = input("Enter Context7 API Key (optional, press Enter to skip): ").strip()
-    
+    if not github_token and is_interactive:
+        print("\n[GitHub MCP Configuration]")
+        print("If you have a GitHub account, you can provide a Personal Access Token (PAT) to avoid rate limits and allow the agent to write/push code.")
+        print("If you do not have an account, or just want to reference public repos without auth, you can leave this blank.")
+        github_token = input("Enter GitHub PAT (optional, press Enter to skip): ").strip()
+        
+    if not context7_key and is_interactive:
+        print("\n[Context7 Docs MCP Configuration]")
+        print("Context7 fetches live documentation for coding concepts/libraries.")
+        context7_key = input("Enter Context7 API Key (optional, press Enter to skip): ").strip()
+        
     # Construct MCP configuration
     mcp_config = {
         "mcpServers": {
@@ -45,8 +72,8 @@ def setup_mcp_config(vault_path):
                 "args": ["-y", "youtube-transcript-mcp"]
             },
             "markitdown": {
-                "command": "npx",
-                "args": ["-y", "markitdown-mcp"]
+                "command": "uvx",
+                "args": ["markitdown-mcp"]
             }
         }
     }
@@ -66,32 +93,41 @@ def setup_mcp_config(vault_path):
     if context7_key:
         mcp_config["mcpServers"]["context7"] = {
             "command": "npx",
-            "args": ["-y", "context7-mcp"],
+            "args": ["-y", "@upstash/context7-mcp"],
             "env": {
                 "CONTEXT7_API_KEY": context7_key
             }
         }
     
     # Write to local file
-    config_path = os.path.join(os.getcwd(), "mcp-config.json")
+    config_path = os.path.join(vault_path, "mcp-config.json")
     with open(config_path, "w") as f:
         json.dump(mcp_config, f, indent=2)
     
-    print(f"\n✅ Created local MCP configuration at: {config_path}")
-    print("You can copy the contents of this file into your agent client's configuration (e.g. Claude Desktop config).")
-    
+    print(f"✅ Created local MCP configuration at: {config_path}")
     return mcp_config
 
-def setup_daemon():
+def setup_daemon(vault_path):
     print("\n--- Scheduled Daemon Setup ---")
-    daemon_script = "#!/bin/bash\n"
-    daemon_script += "# Self-contained runner script for the OKF Ingestion Agent\n\n"
-    daemon_script += f"cd {os.getcwd()}\n"
-    daemon_script += "echo \"Running OKF Enrichment Daemon tick...\"\n"
-    daemon_script += "# Replace this with your actual agent CLI runner command\n"
-    daemon_script += "# Example: agy run --prompt agent_prompt_template.md --mcp mcp-config.json\n"
+    daemon_script = f"""#!/bin/bash
+# Self-contained runner script for the OKF Ingestion Agent
+cd "{vault_path}"
+
+echo "Running OKF Enrichment Daemon tick..."
+
+# Check for available agent CLI runners and execute
+if command -v agy &> /dev/null; then
+  agy run --prompt agent_prompt_template.md --mcp mcp-config.json
+elif command -v claude &> /dev/null; then
+  claude --prompt agent_prompt_template.md --mcp mcp-config.json
+else
+  echo "Error: No agent runner CLI (e.g., agy or claude) found in PATH."
+  echo "Please run the agent manually with the 'agent_prompt_template.md' prompt."
+  exit 1
+fi
+"""
     
-    daemon_path = os.path.join(os.getcwd(), "run_daemon.sh")
+    daemon_path = os.path.join(vault_path, "run_daemon.sh")
     with open(daemon_path, "w") as f:
         f.write(daemon_script)
     
@@ -103,17 +139,30 @@ def setup_daemon():
         print(f"Created daemon script but could not make executable: {e}")
 
 def main():
+    parser = argparse.ArgumentParser(description="OKF Wiki Template Setup Wizard")
+    parser.add_argument("--vault-path", default=os.getcwd(), help="Absolute path to the wiki vault")
+    parser.add_argument("--github-token", default=None, help="GitHub Personal Access Token (optional)")
+    parser.add_argument("--context7-key", default=None, help="Context7 API Key (optional)")
+    parser.add_argument("--dry-run", action="store_true", help="Perform a dry run without writing files")
+    
+    args = parser.parse_args()
+    
     print("=========================================")
     print("    OKF Wiki Template Setup Wizard       ")
     print("=========================================")
     
-    # Get current working directory as vault path
-    vault_path = os.getcwd()
-    print(f"Configuring wiki vault path to: {vault_path}")
+    vault_path = os.path.abspath(args.vault_path)
+    print(f"Target vault path: {vault_path}")
     
+    if args.dry_run:
+        print("Dry run requested. No changes will be written.")
+        check_dependencies()
+        return
+        
     check_dependencies()
-    setup_mcp_config(vault_path)
-    setup_daemon()
+    create_directory_structure(vault_path)
+    setup_mcp_config(vault_path, args.github_token, args.context7_key)
+    setup_daemon(vault_path)
     
     print("\n=========================================")
     print("Setup Complete!")

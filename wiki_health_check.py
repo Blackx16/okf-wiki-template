@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import os
 import re
-import yaml
 from datetime import datetime, date
 
 vault_path = os.path.dirname(os.path.abspath(__file__))
@@ -13,6 +12,44 @@ report_file = os.path.join(queries_dir, 'vault-health-report.md')
 THIN_WORD_COUNT = 100
 STALE_DAYS_LIMIT = 90
 CURRENT_DATE = date.today()
+
+def parse_frontmatter(fm_text):
+    fm = {}
+    in_list = False
+    current_key = None
+    
+    for line in fm_text.splitlines():
+        line = line.strip()
+        if not line or line.startswith('#'):
+            continue
+            
+        if ':' in line and not line.startswith('-'):
+            k, v = line.split(':', 1)
+            k = k.strip()
+            v = v.strip()
+            
+            if v.startswith('[') and v.endswith(']'):
+                items = [x.strip().strip('"').strip("'") for x in v[1:-1].split(',')]
+                fm[k] = [x for x in items if x]
+            elif v.startswith('[') or v == '':
+                fm[k] = []
+                current_key = k
+                in_list = True
+            elif v.lower() in ('true', 'yes', 'on'):
+                fm[k] = True
+            elif v.lower() in ('false', 'no', 'off'):
+                fm[k] = False
+            else:
+                fm[k] = v.strip('"').strip("'")
+        elif in_list and line.startswith('-') and current_key:
+            item = line[1:].strip().strip('"').strip("'")
+            if item:
+                fm[current_key].append(item)
+        elif not line.startswith('-'):
+            in_list = False
+            current_key = None
+            
+    return fm
 
 def parse_date(date_val):
     if isinstance(date_val, date):
@@ -71,10 +108,7 @@ def main():
             fm_text = match.group(1)
             body_text = match.group(2)
             
-            try:
-                fm = yaml.safe_load(fm_text) or {}
-            except yaml.YAMLError:
-                fm = {}
+            fm = parse_frontmatter(fm_text)
                 
             # Parse links in body
             body_links = re.findall(r'\[\[(.*?)\]\]', body_text)
