@@ -1,0 +1,6 @@
+.DS_Store
+mcp-config.json
+.env
+run_daemon.sh
+__pycache__/
+*.pyc

@@ -1,0 +1,47 @@
+{
+  "mcpServers": {
+    "obsidian": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "obsidian-mcp",
+        "--vault-path",
+        "/path/to/your/wiki/vault"
+      ]
+    },
+    "youtube-transcript": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "youtube-transcript-mcp"
+      ]
+    },
+    "markitdown": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "markitdown-mcp"
+      ]
+    },
+    "github-official": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "env": {
+        "//Note": "GITHUB_PERSONAL_ACCESS_TOKEN is optional. Leave empty if you just want to reference public repos without an account (subject to lower rate limits)."
+      }
+    },
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "context7-mcp"
+      ],
+      "env": {
+        "CONTEXT7_API_KEY": "YOUR_CONTEXT7_API_KEY_HERE"
+      }
+    }
+  }
+}
