@@ -7,20 +7,23 @@
         "obsidian-mcp",
         "--vault-path",
         "/path/to/your/wiki/vault"
-      ]
+      ],
+      "//repo": "https://github.com/MarkusPfundstein/mcp-obsidian"
     },
     "youtube-transcript": {
       "command": "npx",
       "args": [
         "-y",
         "youtube-transcript-mcp"
-      ]
+      ],
+      "//repo": "https://github.com/sinco-lab/mcp-youtube-transcript"
     },
     "markitdown": {
       "command": "uvx",
       "args": [
         "markitdown-mcp"
-      ]
+      ],
+      "//repo": "https://github.com/microsoft/markitdown/tree/main/packages/markitdown-mcp"
     },
     "github-official": {
       "command": "npx",
@@ -28,6 +31,7 @@
         "-y",
         "@modelcontextprotocol/server-github"
       ],
+      "//repo": "https://github.com/github/github-mcp-server",
       "env": {
         "//Note": "GITHUB_PERSONAL_ACCESS_TOKEN is optional. Leave empty if you just want to reference public repos without an account (subject to lower rate limits)."
       }
@@ -38,6 +42,7 @@
         "-y",
         "@upstash/context7-mcp"
       ],
+      "//repo": "https://github.com/upstash/context7",
       "env": {
         "CONTEXT7_API_KEY": "YOUR_CONTEXT7_API_KEY_HERE"
       }

@@ -10,6 +10,8 @@ Traditional wikis rely on prose and implicit context, which AI models struggle t
 2. **Strict Schemas:** Every file requires a `type` field (e.g., `source`, `concept`, `entity`) to categorize knowledge strictly.
 3. **Deterministic Relationships:** Relationships are explicitly declared in the YAML frontmatter via `related: []` arrays, allowing agents to instantly build and traverse the knowledge graph.
 
+*Note: The OKF/Context Engine paradigm is heavily inspired by Google's internal systems and research on structured knowledge representation.*
+
 ---
 
 ## Getting Started
@@ -32,11 +34,12 @@ This wizard will:
 The setup script will output `mcp-config.json`. Merge this configuration into your LLM agent client (e.g. Claude Desktop, Gemini/Antigravity desktop runner).
 
 Supported MCP servers:
-- **`obsidian`**: Connects the agent directly to read/write from the markdown files.
-- **`markitdown`**: Auto-converts PDF, HTML, and office docs to markdown (via `uvx markitdown-mcp`).
-- **`youtube-transcript`**: Automatically pulls transcripts for youtube video notes.
-- **`github-official`**: *(Auth Optional)* References and searches public repositories to enrich entity/concept definitions. No GitHub developer account is required unless you want to bypass rate limits or push commits.
-- **`context7`**: Fetches developer docs to build accurate concept profiles (via `@upstash/context7-mcp`).
+- **`obsidian`**: Connects the agent directly to read/write from the markdown files. [Repo](https://github.com/MarkusPfundstein/mcp-obsidian)
+  - *See [OBSIDIAN_MCP_SETUP.md](OBSIDIAN_MCP_SETUP.md) for a detailed video tutorial and setup guide.*
+- **`markitdown`**: Auto-converts PDF, HTML, and office docs to markdown (via `uvx markitdown-mcp`). [Repo](https://github.com/microsoft/markitdown/tree/main/packages/markitdown-mcp)
+- **`youtube-transcript`**: Automatically pulls transcripts for youtube video notes. [Repo](https://github.com/sinco-lab/mcp-youtube-transcript)
+- **`github-official`**: *(Auth Optional)* References and searches public repositories to enrich entity/concept definitions. [Repo](https://github.com/github/github-mcp-server)
+- **`context7`**: Fetches developer docs to build accurate concept profiles (via `@upstash/context7-mcp`). [Repo](https://github.com/upstash/context7)
 
 ### 4. Deploy the Daemon
 Use `agent_prompt_template.md` to set up a scheduled background task (cron job) that automatically runs `run_daemon.sh` to ingest raw files into your wiki.
