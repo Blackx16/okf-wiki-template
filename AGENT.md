@@ -64,3 +64,18 @@ When sources disagree:
 6. Update related entity/concept pages using their respective templates.
 7. Append a parseable `log.md` entry.
 8. Commit changes to git.
+
+## Lint & Health Check Workflow
+
+Run the automated health check script periodically to scan the vault:
+```bash
+python3 wiki_health_check.py
+```
+This generates a detailed health report at `wiki/queries/vault-health-report.md`.
+
+You are instructed to check this report and prioritize fixing issues:
+- **Contradictions:** Resolve contradictory claims or remove contradiction callouts when resolved.
+- **Broken Links:** Fix wikilinks referencing non-existent files.
+- **Orphans:** Add backlinks from relevant pages to integrate orphan files into the graph.
+- **Thin/Stale Notes:** Enrich notes marked as thin (< 100 words or missing `related` arrays) or stale (older than 90 days).
+
