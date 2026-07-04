@@ -71,9 +71,9 @@ Run the automated health check script periodically to scan the vault:
 ```bash
 python3 wiki_health_check.py
 ```
-This generates a detailed health report at `wiki/queries/vault-health-report.md`.
+This generates a concise health summary at `wiki/queries/vault-health-summary.md` and a detailed report at `wiki/queries/vault-health-report.md`.
 
-You are instructed to check this report and prioritize fixing issues:
+You are instructed to check the summary report and prioritize fixing issues:
 - **Contradictions:** Resolve contradictory claims or remove contradiction callouts when resolved.
 - **Broken Links:** Fix wikilinks referencing non-existent files.
 - **Orphans:** Add backlinks from relevant pages to integrate orphan files into the graph.

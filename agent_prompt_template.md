@@ -19,12 +19,12 @@ At the start of every tick, read the following to understand the rules, state, a
 1. `system-context.md` (Contains the global dictionary and OKF schema declarations).
 2. `AGENTS.md` (Contains the general operating manual).
 3. The last 30 lines of `log.md`.
-4. `wiki/queries/vault-health-report.md` (Contains the latest audit issues).
+4. `wiki/queries/vault-health-summary.md` (Contains the latest audit counts/summary).
 
 ## §4 DISCOVERY & BATCHING
-1. Scan all subfolders in `raw/`.
-2. For each file, check if it's already ingested. If it exists in `wiki/sources/`, skip it.
-3. Process actionable files safely within your context limits.
+1. Run `python3 wiki_auto_ingest_manifest.py` and parse its JSON output.
+2. The manifest pre-computes what files are actionable (e.g. `new_or_disconnected`, `missing_body_backlink`) and chunks them safely into context limits.
+3. Process exactly one batch from `batches[0]` this tick. Do not re-scan `raw/` yourself. If `actionable_count` is 0, append a `✅ clean tick` note to `log.md` and stop.
 
 ## §5 OKF INGEST PROCEDURE (Per File)
 For each file in your batch:
@@ -39,7 +39,7 @@ For each file in your batch:
 4. **Log:** Append an entry to `log.md` in the exact format: `## [YYYY-MM-DD] ingest | Source Title` followed by bullet points of created/updated pages.
 
 ## §6 POST-INGEST & LINTING
-1. **Lint Pass:** Run `python3 wiki_health_check.py` to generate `wiki/queries/vault-health-report.md`. Resolve high-priority contradictions, broken links, syntax errors, and integrate orphan notes.
+1. **Lint Pass:** Run `python3 wiki_health_check.py` to generate `wiki/queries/vault-health-summary.md` and `vault-health-report.md`. Resolve high-priority contradictions, broken links, syntax errors, and integrate orphan notes.
 
 
 ## §7 COMPLETION GATE & GIT COMMIT

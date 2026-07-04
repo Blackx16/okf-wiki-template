@@ -7,6 +7,7 @@ vault_path = os.path.dirname(os.path.abspath(__file__))
 wiki_dir = os.path.join(vault_path, 'wiki')
 queries_dir = os.path.join(wiki_dir, 'queries')
 report_file = os.path.join(queries_dir, 'vault-health-report.md')
+summary_file = os.path.join(queries_dir, 'vault-health-summary.md')
 
 # Configurations
 THIN_WORD_COUNT = 100
@@ -197,16 +198,13 @@ def main():
             if target not in all_slugs and target != '':
                 broken_links.append((slug, info, target))
 
-    # 4. Generate Report
     os.makedirs(queries_dir, exist_ok=True)
     
-    with open(report_file, 'w') as f:
-        f.write(f"# Wiki Vault Health Report\n\n")
+    # 4a. Generate Summary Report
+    total_notes = len(all_slugs)
+    with open(summary_file, 'w') as f:
+        f.write(f"# Wiki Vault Health Summary\n\n")
         f.write(f"Generated on: `{CURRENT_DATE.strftime('%Y-%m-%d')}`\n\n")
-        
-        # Summary Section
-        total_notes = len(all_slugs)
-        f.write(f"## Summary Metrics\n\n")
         f.write(f"| Metric | Count | Percentage |\n")
         f.write(f"| :--- | :--- | :--- |\n")
         f.write(f"| **Total Notes** | {total_notes} | 100% |\n")
@@ -215,8 +213,12 @@ def main():
         f.write(f"| 🛑 **Contradictions** | {len(contradiction_notes)} | {len(contradiction_notes)/total_notes*100:.1f}% |\n")
         f.write(f"| 🕸️ **Orphan Notes** | {len(orphan_notes)} | {len(orphan_notes)/total_notes*100:.1f}% |\n")
         f.write(f"| ❌ **Broken Links** | {len(broken_links)} | - |\n\n")
+        f.write(f"For full action items, see [[vault-health-report]].\n")
         
-        # Action Items & Suggested Fixes
+    # 4b. Generate Detailed Report
+    with open(report_file, 'w') as f:
+        f.write(f"# Wiki Vault Detailed Health Report\n\n")
+        f.write(f"Generated on: `{CURRENT_DATE.strftime('%Y-%m-%d')}`\n\n")
         f.write(f"## Recommended Action Items\n\n")
         
         if contradiction_notes:
@@ -272,7 +274,7 @@ def main():
                 f.write(f"  *Action:* Repair the YAML frontmatter block so it matches the OKF schema.\n")
             f.write("\n")
 
-    print(f"Health check report written to: {report_file}")
+    print(f"Health check reports written to: {summary_file} and {report_file}")
 
 if __name__ == '__main__':
     main()

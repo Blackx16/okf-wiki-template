@@ -9,6 +9,7 @@ from __future__ import annotations
 from pathlib import Path
 import json
 import hashlib
+import argparse
 
 # Determine vault root dynamically based on script location
 ROOT = Path(__file__).resolve().parent
@@ -72,6 +73,16 @@ def chunk_plan(rel: str, chars: int, tokens: int) -> list[dict]:
     return chunks
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Wiki Auto Ingest Manifest Generator")
+    parser.add_argument("--context-size", type=int, default=200000, help="Max context window size in tokens")
+    args = parser.parse_args()
+
+    token_context = args.context_size
+    # Adjust dynamic scaling based on context size
+    safe_input_tokens = int(token_context * 0.55)
+    target_batch_tokens = int(token_context * 0.375)
+    chunk_tokens = int(token_context * 0.175)
+
     if not RAW.exists():
         print(json.dumps({'error': 'raw/ directory not found. Run setup.py first.'}, indent=2))
         return
@@ -112,7 +123,7 @@ def main() -> None:
             'sha256': sha256(p),
             'status': status,
             'linked_pages': linked_pages,
-            'requires_chunking': tokens > CHUNK_TOKENS,
+            'requires_chunking': tokens > chunk_tokens,
             'chunks': chunk_plan(rel, size, tokens),
         })
 
@@ -122,8 +133,8 @@ def main() -> None:
     current = []
     current_tokens = 0
     for item in actionable:
-        cost = min(item['approx_tokens'], CHUNK_TOKENS if item['requires_chunking'] else item['approx_tokens'])
-        if current and (current_tokens + cost > TARGET_BATCH_TOKENS or len(current) >= MAX_FILES_PER_BATCH):
+        cost = min(item['approx_tokens'], chunk_tokens if item['requires_chunking'] else item['approx_tokens'])
+        if current and (current_tokens + cost > target_batch_tokens or len(current) >= MAX_FILES_PER_BATCH):
             batches.append({'approx_tokens': current_tokens, 'items': current})
             current = []
             current_tokens = 0
@@ -134,10 +145,10 @@ def main() -> None:
 
     print(json.dumps({
         'wiki_root': str(ROOT),
-        'context_window_tokens': TOKEN_CONTEXT,
-        'safe_input_tokens': SAFE_INPUT_TOKENS,
-        'target_batch_tokens': TARGET_BATCH_TOKENS,
-        'chunk_tokens': CHUNK_TOKENS,
+        'context_window_tokens': token_context,
+        'safe_input_tokens': safe_input_tokens,
+        'target_batch_tokens': target_batch_tokens,
+        'chunk_tokens': chunk_tokens,
         'raw_file_count': len(raw_files),
         'source_page_count': len(srcs),
         'actionable_count': len(actionable),

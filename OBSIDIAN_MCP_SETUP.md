@@ -5,7 +5,12 @@ This guide is based on the [Automate Note Generation in Obsidian with AI Claude 
 > [!WARNING]
 > Since the MCP server can read and write to your vault, it is highly recommended to start with a testing vault (e.g. "AI Research Vault") before running this on your primary Obsidian Vault.
 
-There are two primary ways to set this up: an **Advanced Setup** (manual Python/uv installation) and an **Easy Setup** (using the MCP Tools community plugin). 
+> [!NOTE]
+> **Default Implementation:** The `mcp-config.json.template` included in this repository defaults to [StevenStavrakis/obsidian-mcp](https://github.com/StevenStavrakis/obsidian-mcp) via `npx -y obsidian-mcp <vault-path>` because it operates directly on the filesystem and requires no plugin installation or API keys. If you use the default config, no further setup is needed! 
+> 
+> The guide below covers the alternative **REST API-based server** ([MarkusPfundstein/mcp-obsidian](https://github.com/MarkusPfundstein/mcp-obsidian)) which was featured in the original video tutorial.
+
+There are two primary ways to set up the REST API server: an **Advanced Setup** (manual Python/uv installation) and an **Easy Setup** (using the MCP Tools community plugin). 
 
 ---
 

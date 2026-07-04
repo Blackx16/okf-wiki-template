@@ -5,16 +5,15 @@
       "args": [
         "-y",
         "obsidian-mcp",
-        "--vault-path",
         "/path/to/your/wiki/vault"
       ],
-      "//repo": "https://github.com/MarkusPfundstein/mcp-obsidian"
+      "//repo": "https://github.com/StevenStavrakis/obsidian-mcp"
     },
     "youtube-transcript": {
       "command": "npx",
       "args": [
         "-y",
-        "youtube-transcript-mcp"
+        "@sinco-lab/mcp-youtube-transcript"
       ],
       "//repo": "https://github.com/sinco-lab/mcp-youtube-transcript"
     },

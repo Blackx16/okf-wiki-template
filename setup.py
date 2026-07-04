@@ -91,11 +91,11 @@ def setup_mcp_config(vault_path, github_token=None, context7_key=None):
         "mcpServers": {
             "obsidian": {
                 "command": "npx",
-                "args": ["-y", "obsidian-mcp", "--vault-path", vault_path]
+                "args": ["-y", "obsidian-mcp", vault_path]
             },
             "youtube-transcript": {
                 "command": "npx",
-                "args": ["-y", "youtube-transcript-mcp"]
+                "args": ["-y", "@sinco-lab/mcp-youtube-transcript"]
             },
             "markitdown": {
                 "command": "uvx",
