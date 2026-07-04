@@ -194,7 +194,7 @@ def main():
     print("Setup Complete!")
     print("1. Review 'mcp-config.json' and import it into your agent runner.")
     print("2. Set up a cron job or scheduled task to run 'run_daemon.sh' regularly.")
-    print("3. Check out README.md and AGENT.md for next steps.")
+    print("3. Check out README.md and AGENTS.md for next steps.")
     print("=========================================")
 
 if __name__ == "__main__":

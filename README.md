@@ -34,7 +34,7 @@ This wizard will:
 The setup script will output `mcp-config.json`. Merge this configuration into your LLM agent client (e.g. Claude Desktop, Gemini/Antigravity desktop runner).
 
 Supported MCP servers:
-- [**`obsidian`**](https://github.com/MarkusPfundstein/mcp-obsidian): Connects the agent directly to read/write from the markdown files.
+- [**`obsidian`**](https://github.com/StevenStavrakis/obsidian-mcp): Connects the agent directly to read/write from the markdown files.
   - *See [OBSIDIAN_MCP_SETUP.md](OBSIDIAN_MCP_SETUP.md) for a detailed video tutorial and setup guide.*
 - [**`markitdown`**](https://github.com/microsoft/markitdown/tree/main/packages/markitdown-mcp): Auto-converts PDF, HTML, and office docs to markdown (via `uvx markitdown-mcp`).
 - [**`youtube-transcript`**](https://github.com/sinco-lab/mcp-youtube-transcript): Automatically pulls transcripts for youtube video notes.
@@ -56,4 +56,5 @@ Open and read [AGENTS.md](AGENTS.md). This is the operating manual for whatever 
 - `wiki/concepts/`: Living syntheses of abstract ideas across multiple sources.
 - `wiki/entities/`: Centralized metadata about people, orgs, products, or projects.
 - `templates/`: OKF-compliant Markdown templates used by the agent to structure new files.
-- `wiki_health_check.py`: Run this script directly (`python3 wiki_health_check.py`) to generate a full visual audit report of your vault's health (flagging orphans, thin notes, stale files, broken links, and contradictions).
+- `wiki_auto_ingest_manifest.py`: Pre-computes deterministic batch/chunk plans for the LLM daemon to process, dramatically reducing token costs.
+- `wiki_health_check.py`: Run this script directly (`python3 wiki_health_check.py`) to generate a concise summary (`vault-health-summary.md`) and a full visual audit report (`vault-health-report.md`) of your vault's health (flagging orphans, thin notes, stale files, broken links, and contradictions).
