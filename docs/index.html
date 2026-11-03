@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Understanding the OKF Wiki Template — An Illustrated Field Guide</title>
+  <meta name="description" content="A plain-English visual guide to the Open Knowledge Format (OKF) Wiki Template: how it turns plain text notes into a structured knowledge graph for AI agents, and how it compares to normal wikis, Vector Databases (RAG), and Graph Databases.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="site-topbar">
+    <div class="topbar-inner">
+      <a href="#top" class="brand-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="6" cy="6" r="3"></circle>
+          <circle cx="18" cy="6" r="3"></circle>
+          <circle cx="6" cy="18" r="3"></circle>
+          <circle cx="18" cy="18" r="3"></circle>
+          <line x1="8.7" y1="7.2" x2="15.3" y2="16.8"></line>
+          <line x1="9" y1="6" x2="15" y2="6"></line>
+          <line x1="6" y1="9" x2="6" y2="15"></line>
+        </svg>
+        <span>OKF Wiki Field Guide</span>
+      </a>
+
+      <nav class="section-nav" aria-label="Guide sections">
+        <a href="#core-idea">The Core Idea</a>
+        <a href="#how-graph-works">Knowledge Graph</a>
+        <a href="#comparisons">Comparisons</a>
+        <a href="#automation-pipeline">Automation Pipeline</a>
+        <a href="#repo-tour">Files in This Repo</a>
+        <a href="#resources">Resources</a>
+        <a href="#glossary">Dictionary</a>
+      </nav>
+
+      <div class="topbar-actions">
+        <button type="button" id="theme-toggle-btn" class="btn-utility" aria-label="Switch color theme">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+          </svg>
+          <span id="theme-toggle-label">Dark ink</span>
+        </button>
+        <a href="https://github.com/Blackx16/okf-wiki-template" class="btn-utility" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path>
+            <path d="M9 18c-4.51 2-5-2-7-2"></path>
+          </svg>
+          <span>GitHub Repo</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main id="top" class="page-shell">
+
+    <!-- Hero Introduction -->
+    <section class="hero-header" aria-labelledby="hero-heading">
+      <div>
+        <h1 id="hero-heading">How to build a knowledge base that both humans and AI can actually trust</h1>
+        <p class="lead-paragraph">
+          When you ask an <button type="button" class="dict-term" data-term="llm">LLM</button> to summarize articles into a normal folder of notes, it quickly creates a mess: sources get lost, pages get duplicated, and conflicting facts silently overwrite one another.
+        </p>
+        <p class="lead-paragraph">
+          The <button type="button" class="dict-term" data-term="okf">Open Knowledge Format (OKF)</button> Wiki Template fixes this without locking your notes inside a complex database. It uses ordinary <button type="button" class="dict-term" data-term="markdown">Markdown</button> text files, standardized <button type="button" class="dict-term" data-term="yaml-frontmatter">YAML Frontmatter</button> index cards, and two lightweight Python scripts to turn a plain folder into a self-auditing <button type="button" class="dict-term" data-term="knowledge-graph">Knowledge Graph</button>.
+        </p>
+
+        <div class="origins-reference-banner">
+          <span class="origins-reference-text">
+            <strong>Official Origins:</strong> Built on Google Cloud Data Analytics research and Andrej Karpathy's LLM Wiki architecture.
+          </span>
+          <div class="origins-reference-links">
+            <a href="https://github.com/GoogleCloudPlatform/open-knowledge-format.git" target="_blank" rel="noopener noreferrer">
+              <span>GoogleCloudPlatform/open-knowledge-format</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+            <a href="https://cloud.google.com/blog/products/data-analytics/how-the-open-knowledge-format-can-improve-data-sharing" target="_blank" rel="noopener noreferrer">
+              <span>Google Cloud Blog Article</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <aside class="reading-key-panel" aria-label="Interactive guide instructions">
+        <h2 class="reading-key-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+          </svg>
+          <span>How to read this interactive page</span>
+        </h2>
+        <p style="margin: 0; font-size: 0.92rem; color: var(--ink-secondary);">
+          Every technical term on this page has a built-in plain-English dictionary card. Try hovering your mouse over (or tapping on mobile) any highlighted word:
+        </p>
+        <div style="margin: 0.85rem 0; display: flex; flex-wrap: wrap; gap: 0.45rem;">
+          <button type="button" class="dict-term" data-term="provenance">Provenance</button>
+          <button type="button" class="dict-term" data-term="vector-database">Vector Database</button>
+          <button type="button" class="dict-term" data-term="token">Token</button>
+          <button type="button" class="dict-term" data-term="mcp">MCP</button>
+        </div>
+        <ul class="reading-key-list">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+              <line x1="7" y1="8" x2="17" y2="8"></line>
+              <line x1="7" y1="12" x2="13" y2="12"></line>
+            </svg>
+            <span><strong>Plain-English definitions:</strong> Every card explains the term in everyday language plus a real-world analogy.</span>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="9"></circle>
+              <polyline points="12 7 12 12 15 15"></polyline>
+            </svg>
+            <span><strong>Interactive diagrams:</strong> Click the nodes and files below to inspect how the actual repository works under the hood.</span>
+          </li>
+        </ul>
+      </aside>
+    </section>
+
+    <!-- Section 1: The Core Idea (Sticky Notes vs Library Index Cards) -->
+    <section id="core-idea" class="guide-section" aria-labelledby="heading-core-idea">
+      <div class="section-header-grid">
+        <h2 id="heading-core-idea">Why normal AI notes break down—and how "Metadata as Code" fixes them</h2>
+        <div class="prose-block">
+          <p>
+            Imagine hiring a fast-reading assistant to summarize every article, PDF, and video you watch. If that assistant writes freeform paragraphs on blank pages, your folder feels helpful for the first ten notes. By note #100, you have a pile of disconnected sticky notes: you cannot tell which claim came from which article, and the assistant has to re-read the entire pile every time you add something new.
+          </p>
+          <p>
+            This repository solves that problem using <button type="button" class="dict-term" data-term="metadata-as-code">Metadata as Code</button>. Every note is still a human-readable <button type="button" class="dict-term" data-term="markdown">Markdown</button> file, but the top of the file carries a standardized index card (<button type="button" class="dict-term" data-term="yaml-frontmatter">YAML Frontmatter</button>) that declares what the page is, where its facts came from (<button type="button" class="dict-term" data-term="provenance">Provenance</button>), and which other pages it connects to.
+          </p>
+          <p>
+            As Andrej Karpathy observed when pioneering the LLM Wiki concept: <em>"LLMs don't get bored, don't forget to update a cross-reference, and can touch 15 files in one pass."</em> What was missing was not another closed database service, but an open format. Just as <button type="button" class="dict-term" data-term="mcp">MCP</button> standardized external tool calling and <code>SKILL.md</code> standardized reusable instructions, OKF standardizes shared memory representation and graph bundling.
+          </p>
+        </div>
+      </div>
+
+      <!-- Interactive Switcher -->
+      <div class="mode-switcher-wrap">
+        <div class="mode-switcher-bar">
+          <div>
+            <strong style="font-size: 0.96rem;">Compare how the file looks on disk:</strong>
+            <span style="font-size: 0.86rem; color: var(--ink-muted); margin-left: 0.4rem;">Switch between a structured OKF note and a normal unstructured AI note</span>
+          </div>
+          <div class="segmented-control" role="tablist" aria-label="Note format comparison">
+            <button type="button" class="segment-btn" role="tab" aria-selected="true" data-compare-mode="okf">
+              OKF Structured Note (This Repo)
+            </button>
+            <button type="button" class="segment-btn" role="tab" aria-selected="false" data-compare-mode="unstructured">
+              Normal Unstructured AI Note
+            </button>
+          </div>
+        </div>
+
+        <div class="comparison-stage">
+          <div class="stage-grid">
+            <div class="file-window">
+              <div class="file-window-header">
+                <span id="compare-filename">wiki/sources/what-is-okf.md</span>
+                <span>Plain Text (.md)</span>
+              </div>
+              <div id="compare-code" class="file-window-body"></div>
+            </div>
+
+            <div>
+              <h3 style="margin-top: 0;">What happens when your vault grows to 500+ notes:</h3>
+              <div id="compare-outcomes" class="outcome-ledger"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Inside the Knowledge Graph (4 Layers + Contradictions) -->
+    <section id="how-graph-works" class="guide-section" aria-labelledby="heading-graph">
+      <div class="section-header-grid">
+        <h2 id="heading-graph">How the four-layer Knowledge Graph is organized</h2>
+        <div class="prose-block">
+          <p>
+            Instead of dumping raw articles and AI summaries into the same folder, the template separates your vault into four clear layers. Raw originals in <code>raw/</code> are strictly <button type="button" class="dict-term" data-term="immutable">Immutable</button>—the AI reads them but never edits them. From each raw file, the AI builds a reading note in <code>wiki/sources/</code>, and then weaves cross-cutting ideas into <code>wiki/concepts/</code> and <code>wiki/entities/</code> using both YAML <code>related: []</code> lists and clickable <button type="button" class="dict-term" data-term="wikilink">Wikilinks</button>.
+          </p>
+        </div>
+      </div>
+
+      <div class="graph-workbench">
+        <div class="graph-canvas-panel">
+          <div class="graph-canvas-caption">
+            <span><strong>Interactive Vault Map:</strong> Click or tap any box in the diagram to inspect its real file in the repo</span>
+            <span>Solid lines = Provenance &amp; YAML links</span>
+          </div>
+
+          <svg class="graph-svg" viewBox="0 0 680 410" role="group" aria-label="Interactive diagram of the four OKF knowledge graph layers">
+            <defs>
+              <marker id="arrow-muted" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="var(--border-strong)"></path>
+              </marker>
+            </defs>
+
+            <!-- Connecting Edges -->
+            <path id="edge-raw-source" class="graph-edge is-active" d="M 195 115 L 265 115" marker-end="url(#arrow-muted)"></path>
+            <path id="edge-source-concept" class="graph-edge is-active" d="M 445 95 C 475 95, 475 75, 500 75" marker-end="url(#arrow-muted)"></path>
+            <path id="edge-source-entity" class="graph-edge is-active" d="M 445 135 C 475 135, 475 195, 500 195" marker-end="url(#arrow-muted)"></path>
+            <path id="edge-concept-entity" class="graph-edge" d="M 580 125 L 580 155" marker-end="url(#arrow-muted)"></path>
+            <path id="edge-health-audit" class="graph-edge" d="M 355 295 L 355 170" stroke-dasharray="5,5" marker-end="url(#arrow-muted)"></path>
+
+            <!-- Edge Labels -->
+            <text x="230" y="103" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--ink-muted)">sources:[]</text>
+            <text x="472" y="68" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--ink-muted)">related:[]</text>
+            <text x="472" y="218" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--ink-muted)">related:[]</text>
+            <text x="425" y="250" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--ink-muted)">Audits links &amp; dates</text>
+
+            <!-- Node 1: Raw File -->
+            <g id="node-raw" class="graph-node" role="button" tabindex="0" aria-selected="false" aria-label="Layer 1: Raw Immutable Source File">
+              <rect x="20" y="65" width="175" height="100" rx="10" fill="var(--node-raw-bg)" stroke="var(--node-raw)"></rect>
+              <text x="34" y="92" font-family="var(--font-mono)" font-size="11" font-weight="600" fill="var(--node-raw)">1. RAW ORIGINAL</text>
+              <text x="34" y="116" font-family="var(--font-serif)" font-size="15" font-weight="600" fill="var(--ink-primary)">raw/articles/</text>
+              <text x="34" y="135" font-family="var(--font-mono)" font-size="11.5" fill="var(--ink-secondary)">what-is-okf.md</text>
+              <text x="34" y="153" font-family="var(--font-sans)" font-size="10.5" fill="var(--ink-muted)">Never edited by AI</text>
+            </g>
+
+            <!-- Node 2: Source Note -->
+            <g id="node-source" class="graph-node" role="button" tabindex="0" aria-selected="true" aria-label="Layer 2: Wiki Source Reading Note">
+              <rect x="268" y="60" width="177" height="110" rx="10" fill="var(--node-source-bg)" stroke="var(--node-source)"></rect>
+              <text x="282" y="86" font-family="var(--font-mono)" font-size="11" font-weight="600" fill="var(--node-source)">2. SOURCE NOTE</text>
+              <text x="282" y="110" font-family="var(--font-serif)" font-size="15" font-weight="600" fill="var(--ink-primary)">wiki/sources/</text>
+              <text x="282" y="129" font-family="var(--font-mono)" font-size="11.5" fill="var(--ink-secondary)">what-is-okf.md</text>
+              <text x="282" y="151" font-family="var(--font-mono)" font-size="10.5" fill="var(--node-source)">type: source</text>
+            </g>
+
+            <!-- Node 3: Concept Page -->
+            <g id="node-concept" class="graph-node" role="button" tabindex="0" aria-selected="false" aria-label="Layer 3: Wiki Concept Synthesis Page">
+              <rect x="502" y="30" width="160" height="95" rx="10" fill="var(--node-concept-bg)" stroke="var(--node-concept)"></rect>
+              <text x="516" y="55" font-family="var(--font-mono)" font-size="11" font-weight="600" fill="var(--node-concept)">3A. CONCEPT</text>
+              <text x="516" y="77" font-family="var(--font-serif)" font-size="14.5" font-weight="600" fill="var(--ink-primary)">wiki/concepts/</text>
+              <text x="516" y="95" font-family="var(--font-mono)" font-size="10.5" fill="var(--ink-secondary)">open-knowledge-format</text>
+              <text x="516" y="113" font-family="var(--font-mono)" font-size="10.5" fill="var(--node-concept)">type: concept</text>
+            </g>
+
+            <!-- Node 4: Entity Page -->
+            <g id="node-entity" class="graph-node" role="button" tabindex="0" aria-selected="false" aria-label="Layer 3: Wiki Entity Synthesis Page">
+              <rect x="502" y="158" width="160" height="95" rx="10" fill="var(--node-entity-bg)" stroke="var(--node-entity)"></rect>
+              <text x="516" y="183" font-family="var(--font-mono)" font-size="11" font-weight="600" fill="var(--node-entity)">3B. ENTITY</text>
+              <text x="516" y="205" font-family="var(--font-serif)" font-size="14.5" font-weight="600" fill="var(--ink-primary)">wiki/entities/</text>
+              <text x="516" y="223" font-family="var(--font-mono)" font-size="10.5" fill="var(--ink-secondary)">open-knowledge-fdn</text>
+              <text x="516" y="241" font-family="var(--font-mono)" font-size="10.5" fill="var(--node-entity)">type: entity</text>
+            </g>
+
+            <!-- Node 5: Health Check Reports -->
+            <g id="node-query" class="graph-node" role="button" tabindex="0" aria-selected="false" aria-label="Layer 4: Automated Health Audit Reports">
+              <rect x="200" y="295" width="310" height="92" rx="10" fill="var(--node-warn-bg)" stroke="var(--node-warn)"></rect>
+              <text x="218" y="320" font-family="var(--font-mono)" font-size="11" font-weight="600" fill="var(--node-warn)">4. AUTOMATED GRAPH AUDITOR (wiki_health_check.py)</text>
+              <text x="218" y="344" font-family="var(--font-serif)" font-size="15" font-weight="600" fill="var(--ink-primary)">wiki/queries/vault-health-summary.md</text>
+              <text x="218" y="366" font-family="var(--font-sans)" font-size="11.5" fill="var(--ink-secondary)">Flags orphans, broken links, thin/stale notes &amp; contradictions</text>
+            </g>
+          </svg>
+        </div>
+
+        <!-- Live Node Inspector -->
+        <aside class="graph-inspector-panel" aria-live="polite">
+          <span id="graph-inspector-badge" class="node-badge badge-source">Layer 2 · Source Reading Note</span>
+          <h3 id="graph-inspector-title" style="margin-top: 0; font-family: var(--font-mono); font-size: 1.05rem;">wiki/sources/what-is-okf.md</h3>
+          <p id="graph-inspector-summary" style="font-size: 0.92rem; color: var(--ink-secondary); margin-bottom: 1rem;"></p>
+          <table class="inspector-meta-table">
+            <tbody id="graph-inspector-meta"></tbody>
+          </table>
+        </aside>
+      </div>
+
+      <!-- Contradiction Handling Showcase -->
+      <div class="contradiction-showcase">
+        <div>
+          <h3>What happens when two sources disagree?</h3>
+          <p style="margin: 0 0 0.75rem; font-size: 0.95rem; color: var(--ink-secondary);">
+            In a normal AI wiki, when a newer article contradicts an older article, the AI silently overwrites the old sentence—erasing history without telling you.
+          </p>
+          <p style="margin: 0; font-size: 0.95rem; color: var(--ink-secondary);">
+            In OKF, the agent is forbidden from silently overwriting claims. Instead, it keeps both claims and inserts a <button type="button" class="dict-term" data-term="contradiction-callout">Contradiction Callout</button> which <code>wiki_health_check.py</code> immediately highlights in your health report so you can decide what is true.
+          </p>
+        </div>
+        <div class="contradiction-code">
+          <div style="color: var(--ink-muted); margin-bottom: 0.4rem;"># Inside a Concept or Entity page:</div>
+          <div>&gt; [!contradiction]</div>
+          <div>&gt; <strong>Source A</strong> ([[2024-benchmark]]) states context windows over 100k degrade recall by 18%.</div>
+          <div>&gt; <strong>Source B</strong> ([[2026-retrieval-study]]) reports <button type="button" class="dict-term" data-term="deterministic">deterministic</button> YAML links maintain 99.4% recall up to 200k tokens.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Comparing OKF to Normal LLM Wikis, Vector DBs (RAG), and Graph DBs -->
+    <section id="comparisons" class="guide-section" aria-labelledby="heading-comparisons">
+      <div class="section-header-grid">
+        <h2 id="heading-comparisons">How OKF compares to a Normal LLM Wiki, Vector Databases (RAG), and Graph Databases</h2>
+        <div class="prose-block">
+          <p>
+            When people want AI to answer questions from their documents, they usually hear about three options: letting an AI write freeform notes, setting up a <button type="button" class="dict-term" data-term="vector-database">Vector Database</button> for <button type="button" class="dict-term" data-term="rag">RAG</button>, or running an enterprise <button type="button" class="dict-term" data-term="graph-database">Graph Database</button> like Neo4j. Each tool was built for a different job. Here is how they actually work in plain English.
+          </p>
+        </div>
+      </div>
+
+      <!-- 4 Visual Architecture Cards -->
+      <div class="arch-comparison-strip">
+        <!-- 1. Normal LLM Wiki -->
+        <article class="arch-panel">
+          <h3>1. Normal LLM Wiki</h3>
+          <p class="arch-subtitle">AI writes freeform Markdown summaries without strict schemas or Python link checkers.</p>
+          <svg class="arch-flow-svg" viewBox="0 0 420 90" aria-label="Normal LLM Wiki flow">
+            <rect x="10" y="20" width="105" height="50" rx="6" fill="var(--bg-surface)" stroke="var(--border-strong)"></rect>
+            <text x="62" y="49" text-anchor="middle" font-size="11" font-family="var(--font-sans)" fill="var(--ink-primary)">Articles &amp; Notes</text>
+            <line x1="115" y1="45" x2="155" y2="45" stroke="var(--border-strong)" stroke-width="1.75"></line>
+            <rect x="155" y="20" width="105" height="50" rx="6" fill="var(--bg-surface)" stroke="var(--border-strong)"></rect>
+            <text x="207" y="49" text-anchor="middle" font-size="11" font-family="var(--font-sans)" fill="var(--ink-primary)">AI Freeform Text</text>
+            <line x1="260" y1="45" x2="300" y2="45" stroke="var(--border-strong)" stroke-width="1.75" stroke-dasharray="4,4"></line>
+            <rect x="300" y="20" width="110" height="50" rx="6" fill="var(--node-warn-bg)" stroke="var(--node-warn)"></rect>
+            <text x="355" y="43" text-anchor="middle" font-size="10.5" font-weight="600" font-family="var(--font-sans)" fill="var(--node-warn)">Broken Links &amp;</text>
+            <text x="355" y="58" text-anchor="middle" font-size="10.5" font-family="var(--font-sans)" fill="var(--node-warn)">Lost Sources</text>
+          </svg>
+          <p class="arch-verdict">
+            <strong>The catch:</strong> Easy to start on day one, but without mandatory <code>type:</code> and <code>sources:</code> fields, the AI quickly creates orphan notes, forgets where facts came from, and burns money re-reading files.
+          </p>
+        </article>
+
+        <!-- 2. Vector Database (RAG) -->
+        <article class="arch-panel">
+          <h3>2. Vector Database (<button type="button" class="dict-term" data-term="rag">RAG</button>)</h3>
+          <p class="arch-subtitle">Chops documents into fragments and converts them into math coordinates (<button type="button" class="dict-term" data-term="embeddings">Embeddings</button>).</p>
+          <svg class="arch-flow-svg" viewBox="0 0 420 90" aria-label="Vector database flow">
+            <rect x="10" y="20" width="95" height="50" rx="6" fill="var(--bg-surface)" stroke="var(--border-strong)"></rect>
+            <text x="57" y="49" text-anchor="middle" font-size="11" font-family="var(--font-sans)" fill="var(--ink-primary)">100-Page PDF</text>
+            <line x1="105" y1="45" x2="140" y2="45" stroke="var(--border-strong)" stroke-width="1.75"></line>
+            <rect x="140" y="20" width="125" height="50" rx="6" fill="var(--bg-surface)" stroke="var(--border-strong)"></rect>
+            <text x="202" y="42" text-anchor="middle" font-size="10.5" font-family="var(--font-mono)" fill="var(--ink-primary)">[0.02, -0.84, 0.19]</text>
+            <text x="202" y="58" text-anchor="middle" font-size="10" font-family="var(--font-sans)" fill="var(--ink-muted)">Chopped math vectors</text>
+            <line x1="265" y1="45" x2="300" y2="45" stroke="var(--border-strong)" stroke-width="1.75"></line>
+            <rect x="300" y="20" width="110" height="50" rx="6" fill="var(--bg-surface)" stroke="var(--border-strong)"></rect>
+            <text x="355" y="43" text-anchor="middle" font-size="10.5" font-family="var(--font-sans)" fill="var(--ink-primary)">Top-5 "Similar"</text>
+            <text x="355" y="58" text-anchor="middle" font-size="10.5" font-family="var(--font-sans)" fill="var(--ink-muted)">Snippets Only</text>
+          </svg>
+          <p class="arch-verdict">
+            <strong>The catch:</strong> Great for searching 500,000 customer support tickets by keyword vibe, but terrible at seeing the big picture. Humans cannot open a Vector DB to read or fix a wrong connection, and chopped paragraphs lose their surrounding context.
+          </p>
+        </article>
+
+        <!-- 3. Enterprise Graph DB -->
+        <article class="arch-panel">
+          <h3>3. Enterprise Graph DB (Neo4j / RDF)</h3>
+          <p class="arch-subtitle">Stores nodes and edges inside a dedicated database server queried with <button type="button" class="dict-term" data-term="cypher-sparql">Cypher / SPARQL</button>.</p>
+          <svg class="arch-flow-svg" viewBox="0 0 420 90" aria-label="Enterprise Graph Database flow">
+            <rect x="10" y="20" width="105" height="50" rx="6" fill="var(--bg-surface)" stroke="var(--border-strong)"></rect>
+            <text x="62" y="49" text-anchor="middle" font-size="11" font-family="var(--font-sans)" fill="var(--ink-primary)">Ingestion Code</text>
+            <line x1="115" y1="45" x2="155" y2="45" stroke="var(--border-strong)" stroke-width="1.75"></line>
+            <rect x="155" y="20" width="115" height="50" rx="6" fill="var(--bg-surface)" stroke="var(--border-strong)"></rect>
+            <text x="212" y="43" text-anchor="middle" font-size="10.5" font-family="var(--font-mono)" fill="var(--ink-primary)">MATCH (a)-[:REL]-&gt;(b)</text>
+            <text x="212" y="58" text-anchor="middle" font-size="10" font-family="var(--font-sans)" fill="var(--ink-muted)">Database Server</text>
+            <line x1="270" y1="45" x2="305" y2="45" stroke="var(--border-strong)" stroke-width="1.75"></line>
+            <rect x="305" y="20" width="105" height="50" rx="6" fill="var(--bg-surface)" stroke="var(--border-strong)"></rect>
+            <text x="357" y="43" text-anchor="middle" font-size="10.5" font-family="var(--font-sans)" fill="var(--ink-primary)">Requires Custom</text>
+            <text x="357" y="58" text-anchor="middle" font-size="10.5" font-family="var(--font-sans)" fill="var(--ink-muted)">Dashboard / UI</text>
+          </svg>
+          <p class="arch-verdict">
+            <strong>The catch:</strong> Built for massive corporate fraud detection or supply chains with millions of nodes. For personal or team knowledge, running a database server means you can no longer just open your notes in <button type="button" class="dict-term" data-term="obsidian">Obsidian</button> or edit a paragraph by hand.
+          </p>
+        </article>
+
+        <!-- 4. OKF Wiki Template -->
+        <article class="arch-panel is-highlighted">
+          <h3>4. OKF Wiki Template (This Repo)</h3>
+          <p class="arch-subtitle">Plain Markdown files + strict YAML index headers + zero-cost Python graph scripts.</p>
+          <svg class="arch-flow-svg" viewBox="0 0 420 90" aria-label="OKF Wiki Template flow">
+            <rect x="10" y="20" width="95" height="50" rx="6" fill="var(--node-raw-bg)" stroke="var(--node-raw)"></rect>
+            <text x="57" y="43" text-anchor="middle" font-size="10.5" font-weight="600" font-family="var(--font-mono)" fill="var(--node-raw)">raw/ files</text>
+            <text x="57" y="58" text-anchor="middle" font-size="10" font-family="var(--font-sans)" fill="var(--ink-secondary)">Immutable</text>
+            <line x1="105" y1="45" x2="140" y2="45" stroke="var(--node-source)" stroke-width="2"></line>
+            <rect x="140" y="20" width="130" height="50" rx="6" fill="var(--node-source-bg)" stroke="var(--node-source)"></rect>
+            <text x="205" y="42" text-anchor="middle" font-size="10.5" font-weight="600" font-family="var(--font-mono)" fill="var(--node-source)">YAML + [[Links]]</text>
+            <text x="205" y="58" text-anchor="middle" font-size="10" font-family="var(--font-sans)" fill="var(--ink-secondary)">Human &amp; AI readable</text>
+            <line x1="270" y1="45" x2="305" y2="45" stroke="var(--node-source)" stroke-width="2"></line>
+            <rect x="305" y="20" width="105" height="50" rx="6" fill="var(--node-concept-bg)" stroke="var(--node-concept)"></rect>
+            <text x="357" y="43" text-anchor="middle" font-size="10.5" font-weight="600" font-family="var(--font-sans)" fill="var(--node-concept)">Audited Graph</text>
+            <text x="357" y="58" text-anchor="middle" font-size="10" font-family="var(--font-sans)" fill="var(--ink-secondary)">In Plain Folders</text>
+          </svg>
+          <p class="arch-verdict">
+            <strong>The sweet spot:</strong> You get the explicit connections and auditability of a Knowledge Graph, while every single note remains a plain text file you own, read in Obsidian, and track with <button type="button" class="dict-term" data-term="git">Git</button>.
+          </p>
+        </article>
+      </div>
+
+      <!-- Detailed Comparison Table -->
+      <div class="table-scroll-container" role="region" aria-label="Detailed architecture comparison table" tabindex="0">
+        <table class="comparison-matrix">
+          <thead>
+            <tr>
+              <th scope="col">Dimension</th>
+              <th scope="col" class="col-okf">OKF Wiki Template (This Repo)</th>
+              <th scope="col">Normal LLM Wiki</th>
+              <th scope="col">Vector Database (<button type="button" class="dict-term" data-term="rag">RAG</button>)</th>
+              <th scope="col">Graph DB (Neo4j / RDF)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">How information is stored</th>
+              <td class="col-okf">Plain <button type="button" class="dict-term" data-term="markdown">Markdown</button> files with strict <button type="button" class="dict-term" data-term="yaml-frontmatter">YAML Frontmatter</button> headers</td>
+              <td>Unstructured Markdown or text files</td>
+              <td>Chopped text chunks + numerical <button type="button" class="dict-term" data-term="embeddings">Embeddings</button> in a database</td>
+              <td>Nodes &amp; edges inside a database server</td>
+            </tr>
+            <tr>
+              <th scope="row">Can a non-technical person read &amp; edit it directly?</th>
+              <td class="col-okf"><strong>Yes.</strong> Open any file in Obsidian, Notepad, or GitHub and edit normally.</td>
+              <td><strong>Yes,</strong> though pages quickly become disorganized.</td>
+              <td><strong>No.</strong> Humans cannot read vectors of 1,536 decimal numbers.</td>
+              <td><strong>No.</strong> Requires database browsers and query code (<button type="button" class="dict-term" data-term="cypher-sparql">Cypher / SPARQL</button>).</td>
+            </tr>
+            <tr>
+              <th scope="row">How connections between topics are found</th>
+              <td class="col-okf"><strong>Exact &amp; <button type="button" class="dict-term" data-term="deterministic">Deterministic</button>:</strong> Explicitly listed in <code>related: []</code> and inline <code>[[wikilinks]]</code>.</td>
+              <td><strong>Guesswork:</strong> Relies on inconsistent links or full-folder text search.</td>
+              <td><strong>Fuzzy Math:</strong> Finds paragraphs whose math coordinates look "similar."</td>
+              <td><strong>Exact:</strong> Traverses database edges via query languages.</td>
+            </tr>
+            <tr>
+              <th scope="row">Fact traceability (<button type="button" class="dict-term" data-term="provenance">Provenance</button>)</th>
+              <td class="col-okf"><strong>Two-way locked:</strong> Every note links to its untouched file in <code>raw/</code>, verified by Python.</td>
+              <td><strong>Fragile:</strong> Original links are often omitted or accidentally overwritten.</td>
+              <td><strong>Fragmented:</strong> Returns isolated 300-word snippets stripped of whole-document context.</td>
+              <td><strong>Possible,</strong> if you engineer custom provenance properties yourself.</td>
+            </tr>
+            <tr>
+              <th scope="row">What happens when two sources contradict each other?</th>
+              <td class="col-okf"><strong>Preserved &amp; Flagged:</strong> Keeps both claims in a <code>&gt; [!contradiction]</code> box and alerts you in the health report.</td>
+              <td><strong>Silently overwritten:</strong> The AI usually replaces the old claim with whichever file it read last.</td>
+              <td><strong>Confusing:</strong> Retrieves conflicting chunks at the same time without knowing which is newer or trusted.</td>
+              <td><strong>Manual:</strong> Requires custom conflict-resolution rules in your database schema.</td>
+            </tr>
+            <tr>
+              <th scope="row">Infrastructure &amp; running cost</th>
+              <td class="col-okf"><strong>$0 server cost.</strong> Just local files, standard Python, and your existing AI assistant.</td>
+              <td><strong>$0 server cost,</strong> but wastes AI tokens re-scanning files.</td>
+              <td><strong>Ongoing cost:</strong> Embedding API fees + vector database hosting + sync pipelines.</td>
+              <td><strong>High setup cost:</strong> Cloud or Docker database server + schema administration.</td>
+            </tr>
+            <tr>
+              <th scope="row">When should you choose it?</th>
+              <td class="col-okf">Personal research, team engineering wikis, literature reviews, and curated AI context engines (10 to 10,000+ documents).</td>
+              <td>Quick one-off scratchpads where long-term accuracy does not matter.</td>
+              <td>Searching millions of uncurated customer logs or giant legal archives where curation is impossible.</td>
+              <td>Enterprise software backends with millions of live transactional relationships.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section 4: The Automated Factory Pipeline -->
+    <section id="automation-pipeline" class="guide-section" aria-labelledby="heading-pipeline">
+      <div class="section-header-grid">
+        <h2 id="heading-pipeline">How the automated pipeline processes your files without wasting AI tokens</h2>
+        <div class="prose-block">
+          <p>
+            One of the smartest design choices in this repository is that <strong>the AI does not do the clerical work</strong>. If you ask an AI to check 300 files for broken links or figure out which articles are new, you pay for tens of thousands of <button type="button" class="dict-term" data-term="token">Tokens</button> on every single run.
+          </p>
+          <p>
+            Instead, this template pairs the AI with two fast, <button type="button" class="dict-term" data-term="deterministic">Deterministic</button> Python scripts that cost $0 to run. One script prepares the exact to-do batch before the AI wakes up, and the second script inspects the AI's work after it finishes.
+          </p>
+        </div>
+      </div>
+
+      <div class="pipeline-ledger">
+        <!-- Step 1 -->
+        <div class="pipeline-step">
+          <div class="step-stage-meta">
+            <span class="step-actor-tag actor-human">Step 1 · You</span>
+            <span class="step-cost-note">AI Token Cost: 0</span>
+          </div>
+          <div class="step-body">
+            <h3>Initialize the vault &amp; drop files into <code>raw/</code></h3>
+            <p>
+              Run <code>setup.py</code> once to create your folder tree (<code>raw/articles</code>, <code>raw/papers</code>, <code>raw/youtube</code>, etc.), configure <button type="button" class="dict-term" data-term="mcp">MCP</button> adapters, and generate <code>run_daemon.sh</code>. Whenever you find an article, PDF, or note you want to keep, drop it into <code>raw/</code>.
+            </p>
+          </div>
+          <div class="step-command-box">
+            python3 setup.py<br>
+            # Then drop files into:<br>
+            raw/articles/my-note.md
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="pipeline-step">
+          <div class="step-stage-meta">
+            <span class="step-actor-tag actor-python">Step 2 · Python Script</span>
+            <span class="step-cost-note">AI Token Cost: 0</span>
+          </div>
+          <div class="step-body">
+            <h3>The "Mail Sorter" plans a safe batch (<code>wiki_auto_ingest_manifest.py</code>)</h3>
+            <p>
+              Before the AI reads anything, this script scans <code>raw/</code> and <code>wiki/sources/</code>. It fingerprints each file with a <button type="button" class="dict-term" data-term="sha256">SHA-256 Hash</button>, spots which raw files are <code>new_or_disconnected</code> or <code>missing_body_backlink</code>, estimates their token length, plans <button type="button" class="dict-term" data-term="chunking">Chunking</button> for huge files, and packs them into batches that safely fit the AI's <button type="button" class="dict-term" data-term="context-window">Context Window</button>.
+            </p>
+          </div>
+          <div class="step-command-box">
+            python3 wiki_auto_ingest_manifest.py<br>
+            # Outputs JSON manifest:<br>
+            "actionable_count": 1,<br>
+            "batches": [ ... ]
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="pipeline-step">
+          <div class="step-stage-meta">
+            <span class="step-actor-tag actor-ai">Step 3 · AI Agent</span>
+            <span class="step-cost-note">Bounded to Batch #1</span>
+          </div>
+          <div class="step-body">
+            <h3>The OKF Enrichment Agent synthesizes notes</h3>
+            <p>
+              Triggered manually or on a timer (<button type="button" class="dict-term" data-term="daemon">Daemon / Cron Job</button>) via <code>run_daemon.sh</code>, the AI reads <code>AGENTS.md</code> and <code>system-context.md</code>. If <code>actionable_count</code> is 0, it immediately stops. Otherwise, it processes <code>batches[0]</code>: creating source notes in <code>wiki/sources/</code>, updating concepts and entities in <code>wiki/concepts/</code> and <code>wiki/entities/</code>, and logging its work in <code>log.md</code>.
+            </p>
+          </div>
+          <div class="step-command-box">
+            ./run_daemon.sh<br>
+            # Uses templates/source-page.md<br>
+            # Appends to log.md
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="pipeline-step">
+          <div class="step-stage-meta">
+            <span class="step-actor-tag actor-python">Step 4 · Python Linter</span>
+            <span class="step-cost-note">AI Token Cost: 0</span>
+          </div>
+          <div class="step-body">
+            <h3>The "Health Inspector" audits the whole graph (<code>wiki_health_check.py</code>)</h3>
+            <p>
+              Right after ingestion, this script walks every file in <code>wiki/</code> and checks five quality rules: <button type="button" class="dict-term" data-term="orphan-note">Orphan Notes</button> (pages with 0 incoming links), <strong>Broken Links</strong> (links pointing to non-existent pages), <button type="button" class="dict-term" data-term="thin-stale-note">Thin &amp; Stale Notes</button> (&lt; 100 words or &gt; 90 days old), and unresolved <button type="button" class="dict-term" data-term="contradiction-callout">Contradiction Callouts</button>.
+            </p>
+          </div>
+          <div class="step-command-box">
+            python3 wiki_health_check.py<br>
+            # Writes reports to:<br>
+            wiki/queries/vault-health-summary.md
+          </div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="pipeline-step">
+          <div class="step-stage-meta">
+            <span class="step-actor-tag actor-human">Step 5 · Git History</span>
+            <span class="step-cost-note">100% Reversible</span>
+          </div>
+          <div class="step-body">
+            <h3>Safe snapshot in <button type="button" class="dict-term" data-term="git">Git</button></h3>
+            <p>
+              Once <code>log.md</code> and the health reports are updated, the agent commits the changes with a clear <code>[ingest]</code> commit message. Because everything is plain text in Git, you can inspect every line changed or roll back anytime.
+            </p>
+          </div>
+          <div class="step-command-box">
+            git commit -m "[ingest] Add OKF spec"
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Interactive Repository File Explorer -->
+    <section id="repo-tour" class="guide-section" aria-labelledby="heading-repo-tour">
+      <div class="section-header-grid">
+        <h2 id="heading-repo-tour">What else is inside this template? (Interactive File Tour)</h2>
+        <div class="prose-block">
+          <p>
+            Every file in this repository has a specific job. Click or tap any file in the left sidebar below to see a plain-English explanation of what it does, who uses it, and an excerpt of its real contents.
+          </p>
+        </div>
+      </div>
+
+      <div class="repo-explorer-grid">
+        <div class="repo-tree-sidebar" role="tablist" aria-label="Repository files">
+          <div class="tree-group-heading">Operating Rules &amp; Logs</div>
+          <button type="button" class="tree-item-btn" role="tab" aria-selected="true" data-repo-file="AGENTS.md">
+            <span>AGENTS.md</span>
+            <span>Manual</span>
+          </button>
+          <button type="button" class="tree-item-btn" role="tab" aria-selected="false" data-repo-file="system-context.md">
+            <span>system-context.md</span>
+            <span>Schema</span>
+          </button>
+          <button type="button" class="tree-item-btn" role="tab" aria-selected="false" data-repo-file="log.md">
+            <span>log.md</span>
+            <span>History</span>
+          </button>
+
+          <div class="tree-group-heading">Python Automation Scripts</div>
+          <button type="button" class="tree-item-btn" role="tab" aria-selected="false" data-repo-file="setup.py">
+            <span>setup.py</span>
+            <span>Wizard</span>
+          </button>
+          <button type="button" class="tree-item-btn" role="tab" aria-selected="false" data-repo-file="wiki_auto_ingest_manifest.py">
+            <span>wiki_auto_ingest_manifest.py</span>
+            <span>Batcher</span>
+          </button>
+          <button type="button" class="tree-item-btn" role="tab" aria-selected="false" data-repo-file="wiki_health_check.py">
+            <span>wiki_health_check.py</span>
+            <span>Linter</span>
+          </button>
+
+          <div class="tree-group-heading">Daemon, MCP &amp; Templates</div>
+          <button type="button" class="tree-item-btn" role="tab" aria-selected="false" data-repo-file="agent_prompt_template.md">
+            <span>agent_prompt_template.md</span>
+            <span>Prompt</span>
+          </button>
+          <button type="button" class="tree-item-btn" role="tab" aria-selected="false" data-repo-file="mcp-config.json.template">
+            <span>mcp-config.json.template</span>
+            <span>MCP</span>
+          </button>
+          <button type="button" class="tree-item-btn" role="tab" aria-selected="false" data-repo-file="templates/source-page.md">
+            <span>templates/source-page.md</span>
+            <span>Blueprint</span>
+          </button>
+        </div>
+
+        <div class="repo-detail-pane" aria-live="polite">
+          <div class="repo-detail-header">
+            <h3 id="repo-detail-path" class="repo-detail-path">AGENTS.md</h3>
+            <span id="repo-detail-actor" class="step-actor-tag actor-ai">AI Operating Manual</span>
+          </div>
+          <p id="repo-detail-summary" style="margin: 0; font-size: 0.96rem; color: var(--ink-secondary);"></p>
+          <div class="file-window">
+            <div class="file-window-header">
+              <span>Excerpt from repository</span>
+              <span>Read-only preview</span>
+            </div>
+            <pre id="repo-detail-snippet" class="file-window-body" style="margin: 0;"></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 6: Curated Resource Library (Memory Architectures & Engineering) -->
+    <section id="resources" class="guide-section" aria-labelledby="heading-resources">
+      <div class="section-header-grid">
+        <h2 id="heading-resources">Memory Architectures &amp; Engineering: Technical Resource Library</h2>
+        <div class="prose-block">
+          <p>
+            Curated research papers, specifications, architectural breakdowns, and video walkthroughs exploring how AI agents store, traverse, and compile long-term memory—organized by technical depth.
+          </p>
+        </div>
+      </div>
+
+      <!-- Tier 1: Foundations & Core Paradigms (Collapsible, Open by Default) -->
+      <details class="resource-tier-details" open>
+        <summary class="resource-tier-summary">
+          <div class="resource-tier-summary-content">
+            <h3 class="resource-tier-title">
+              <span>Tier 1 · Foundations &amp; Conceptual Paradigms</span>
+            </h3>
+            <span class="tier-badge badge-foundations">Beginner / Core Mental Models</span>
+          </div>
+          <span class="tier-chevron" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </span>
+        </summary>
+        <div class="resource-cards-grid">
+          <a href="https://www.youtube.com/watch?v=4Hvkv_I8QDE" class="resource-card" target="_blank" rel="noopener noreferrer">
+            <div>
+              <div class="resource-card-meta">
+                <span class="resource-kind-tag">YouTube Tutorial</span>
+                <span class="resource-author">Tina Huang</span>
+              </div>
+              <h4 class="resource-card-title">Obsidian in 24 Minutes (3 Levels of AI Integration)</h4>
+              <p class="resource-card-desc">
+                Speedrun of Obsidian vault fundamentals, wikilink graphs, and the 3 levels of AI integration—culminating in Karpathy's LLM Wiki paradigm where the vault acts as a compiled codebase.
+              </p>
+            </div>
+            <div class="resource-card-footer">
+              <span>Watch on YouTube</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </div>
+          </a>
+
+          <a href="https://www.youtube.com/watch?v=k4sMSsMzX2g" class="resource-card" target="_blank" rel="noopener noreferrer">
+            <div>
+              <div class="resource-card-meta">
+                <span class="resource-kind-tag">YouTube Walkthrough</span>
+                <span class="resource-author">AI LABS</span>
+              </div>
+              <h4 class="resource-card-title">Google Replaced The Karpathy's LLM Wiki</h4>
+              <p class="resource-card-desc">
+                Breaks down why unstandardized second brains fail (blind keyword scans and duplicate notes), how Google's OKF formalizes Karpathy's vision, and why structured Markdown outperforms vector RAG.
+              </p>
+            </div>
+            <div class="resource-card-footer">
+              <span>Watch on YouTube</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </div>
+          </a>
+
+          <a href="https://cloud.google.com/blog/products/data-analytics/how-the-open-knowledge-format-can-improve-data-sharing" class="resource-card" target="_blank" rel="noopener noreferrer">
+            <div>
+              <div class="resource-card-meta">
+                <span class="resource-kind-tag">Official Article</span>
+                <span class="resource-author">Google Cloud Data Analytics</span>
+              </div>
+              <h4 class="resource-card-title">How the Open Knowledge Format Can Improve Data Sharing</h4>
+              <p class="resource-card-desc">
+                Sam McVeety and Amir Hormati introduce the OKF specification v0.1: treating metadata as code in plain Markdown files with YAML frontmatter so diverse AI agents and humans share consistent context.
+              </p>
+            </div>
+            <div class="resource-card-footer">
+              <span>Read on Google Cloud Blog</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </div>
+          </a>
+
+          <a href="https://www.youtube.com/watch?v=dxq7WtWxi44&list=TLPQMzAwNjIwMjaQGTVNnfKJBQ&index=5" class="resource-card" target="_blank" rel="noopener noreferrer">
+            <div>
+              <div class="resource-card-meta">
+                <span class="resource-kind-tag">YouTube Architecture</span>
+                <span class="resource-author">Nate B. Jones</span>
+              </div>
+              <h4 class="resource-card-title">Karpathy's Wiki vs. Open Brain: Write-Time vs. Query-Time</h4>
+              <p class="resource-card-desc">
+                Deep dive comparing Write-Time Compilation (file-based LLM Wikis) with Query-Time Synthesis (relational/SQL databases like Open Brain), and how hybrid systems bridge both approaches.
+              </p>
+            </div>
+            <div class="resource-card-footer">
+              <span>Watch on YouTube</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </div>
+          </a>
+
+          <a href="https://www.youtube.com/watch?v=Seu7nksZ_4k" class="resource-card" target="_blank" rel="noopener noreferrer">
+            <div>
+              <div class="resource-card-meta">
+                <span class="resource-kind-tag">YouTube Architecture</span>
+                <span class="resource-author">Damian Galarza</span>
+              </div>
+              <h4 class="resource-card-title">How AI Agents Remember Things (The Write Path)</h4>
+              <p class="resource-card-desc">
+                Deconstructs the write-path architecture of persistent agent memory: dual-tier storage (the desk vs. the filing cabinet), pre-compaction flushes as write-ahead logs, and memory consolidation without vector database overhead.
+              </p>
+            </div>
+            <div class="resource-card-footer">
+              <span>Watch on YouTube</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </div>
+          </a>
+        </div>
+      </details>
+
+      <!-- Tier 2: Specifications, Architecture & Standards (Collapsible, Open by Default) -->
+      <details class="resource-tier-details" open>
+        <summary class="resource-tier-summary">
+          <div class="resource-tier-summary-content">
+            <h3 class="resource-tier-title">
+              <span>Tier 2 · System Specifications &amp; Memory Standards</span>
+            </h3>
+            <span class="tier-badge badge-systems">Intermediate / Builders</span>
+          </div>
+          <span class="tier-chevron" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </span>
+        </summary>
+        <div class="resource-cards-grid">
+          <a href="https://www.youtube.com/watch?v=UHVFcUzAGlM" class="resource-card" target="_blank" rel="noopener noreferrer">
+            <div>
+              <div class="resource-card-meta">
+                <span class="resource-kind-tag">YouTube Taxonomy</span>
+                <span class="resource-author">Simon Scrapes</span>
+              </div>
+              <h4 class="resource-card-title">Every Claude Code Memory System Compared (6 Levels)</h4>
+              <p class="resource-card-desc">
+                A definitive 6-level taxonomy of agent memory: from Level 1 native CLAUDE.md files to Level 3 semantic vectors, Level 5 compiled LLM Wikis, and Level 6 universal cross-harness databases.
+              </p>
+            </div>
+            <div class="resource-card-footer">
+              <span>Watch on YouTube</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </div>
+          </a>
+
+          <a href="https://www.youtube.com/watch?v=9ciGYHHOLyU" class="resource-card" target="_blank" rel="noopener noreferrer">
+            <div>
+              <div class="resource-card-meta">
+                <span class="resource-kind-tag">YouTube Architecture</span>
+                <span class="resource-author">Understory / Kai</span>
+              </div>
+              <h4 class="resource-card-title">LLM Wiki + OKF: Every Local AI Now Shares ONE Memory</h4>
+              <p class="resource-card-desc">
+                Solves local AI amnesia and instruction dilution using the Librarian Agent Pattern (a dedicated local Qwen 32B model managing memory via MCP) and dynamic "Seed Memory" injection.
+              </p>
+            </div>
+            <div class="resource-card-footer">
+              <span>Watch on YouTube</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </div>
+          </a>
+
+          <a href="https://www.youtube.com/watch?v=SpReZZk_13w" class="resource-card" target="_blank" rel="noopener noreferrer">
+            <div>
+              <div class="resource-card-meta">
+                <span class="resource-kind-tag">YouTube Architecture</span>
+                <span class="resource-author">Damian Galarza</span>
+              </div>
+              <h4 class="resource-card-title">How AI Agents Search Their Memory (The Read Path)</h4>
+              <p class="resource-card-desc">
+                Breaks down keyword search (BM25/grep) vs. semantic vectors, SQLite hybrid search (FTS5 + sqlite-vec with score fusion), and the two-step "Search then Get" pattern to keep agent context windows lean.
+              </p>
+            </div>
+            <div class="resource-card-footer">
+              <span>Watch on YouTube</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </div>
+          </a>
+
+          <a href="https://github.com/GoogleCloudPlatform/open-knowledge-format.git" class="resource-card" target="_blank" rel="noopener noreferrer">
+            <div>
+              <div class="resource-card-meta">
+                <span class="resource-kind-tag">Open Specification</span>
+                <span class="resource-author">Google Cloud Platform</span>
+              </div>
+              <h4 class="resource-card-title">Official OKF Specification &amp; Tools Repository</h4>
+              <p class="resource-card-desc">
+                Google Cloud's reference repo containing the OKF v0.1 spec, Gemini dataset enrichment agents, browser-based static graph visualizers, and sample bundles for public datasets.
+              </p>
+            </div>
+            <div class="resource-card-footer">
+              <span>View GitHub Repository</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </div>
+          </a>
+
+          <a href="https://modelcontextprotocol.io/docs/getting-started/intro" class="resource-card" target="_blank" rel="noopener noreferrer">
+            <div>
+              <div class="resource-card-meta">
+                <span class="resource-kind-tag">Open Protocol</span>
+                <span class="resource-author">Anthropic / ModelContextProtocol</span>
+              </div>
+              <h4 class="resource-card-title">Model Context Protocol (MCP) Official Specification</h4>
+              <p class="resource-card-desc">
+                The open architecture standard connecting AI models with local filesystems, memory servers, and developer tools over JSON-RPC stdio and SSE transports.
+              </p>
+            </div>
+            <div class="resource-card-footer">
+              <span>Read MCP Docs</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </div>
+          </a>
+
+          <a href="https://github.com/thecodacus/understory" class="resource-card" target="_blank" rel="noopener noreferrer">
+            <div>
+              <div class="resource-card-meta">
+                <span class="resource-kind-tag">Open Source Project</span>
+                <span class="resource-author">thecodacus</span>
+              </div>
+              <h4 class="resource-card-title">Understory: Local Librarian MCP Memory Engine</h4>
+              <p class="resource-card-desc">
+                Reference implementation of the dedicated local Librarian agent exposing <code>query</code>, <code>add_memory</code>, <code>update_memory</code>, and <code>maintain</code> MCP tools over a shared Markdown vault.
+              </p>
+            </div>
+            <div class="resource-card-footer">
+              <span>View on GitHub</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </div>
+          </a>
+
+          <a href="https://upstash.com/blog/context7-mcp" class="resource-card" target="_blank" rel="noopener noreferrer">
+            <div>
+              <div class="resource-card-meta">
+                <span class="resource-kind-tag">MCP Tool</span>
+                <span class="resource-author">Upstash</span>
+              </div>
+              <h4 class="resource-card-title">Context7: Live Documentation Injection for LLM Prompts</h4>
+              <p class="resource-card-desc">
+                Eliminates out-of-date hallucinations by dynamically injecting current official documentation into AI coding assistant prompts in Cursor, Claude Desktop, and Antigravity.
+              </p>
+            </div>
+            <div class="resource-card-footer">
+              <span>Read Upstash Guide</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </div>
+          </a>
+        </div>
+      </details>
+
+      <!-- Tier 3: Advanced Context Engineering & Multi-Agent Memory (Collapsible, Open by Default) -->
+      <details class="resource-tier-details" open>
+        <summary class="resource-tier-summary">
+          <div class="resource-tier-summary-content">
+            <h3 class="resource-tier-title">
+              <span>Tier 3 · Advanced Context Engineering &amp; Multi-Agent Systems</span>
+            </h3>
+            <span class="tier-badge badge-advanced">Advanced / Engineers</span>
+          </div>
+          <span class="tier-chevron" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </span>
+        </summary>
+        <div class="resource-cards-grid">
+          <a href="https://www.anthropic.com/research/effective-context-engineering" class="resource-card" target="_blank" rel="noopener noreferrer">
+            <div>
+              <div class="resource-card-meta">
+                <span class="resource-kind-tag">Research Paper</span>
+                <span class="resource-author">Anthropic Research</span>
+              </div>
+              <h4 class="resource-card-title">Effective Context Engineering for AI Agents</h4>
+              <p class="resource-card-desc">
+                Foundational principles on curating agent context: preventing context rot, designing concise prompt anchors, optimizing prompt caching, and managing token budgets during complex multi-step reasoning.
+              </p>
+            </div>
+            <div class="resource-card-footer">
+              <span>Read Anthropic Research</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </div>
+          </a>
+
+          <a href="https://developers.openai.com/cookbook/articles/codex_exec_plans" class="resource-card" target="_blank" rel="noopener noreferrer">
+            <div>
+              <div class="resource-card-meta">
+                <span class="resource-kind-tag">Engineering Spec</span>
+                <span class="resource-author">OpenAI Cookbook / Aaron Friel</span>
+              </div>
+              <h4 class="resource-card-title">Codex ExecPlans (PLANS.md) for Multi-Hour Agent Work</h4>
+              <p class="resource-card-desc">
+                The ExecPlan architecture: creating self-contained, outcome-focused living design documents that allow autonomous agents to execute multi-hour tasks without losing state or context across turns.
+              </p>
+            </div>
+            <div class="resource-card-footer">
+              <span>Read OpenAI Cookbook</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </div>
+          </a>
+
+          <a href="https://github.com/openai/symphony" class="resource-card" target="_blank" rel="noopener noreferrer">
+            <div>
+              <div class="resource-card-meta">
+                <span class="resource-kind-tag">Open Source System</span>
+                <span class="resource-author">OpenAI</span>
+              </div>
+              <h4 class="resource-card-title">Symphony: Open-Source Codex Agent Orchestration</h4>
+              <p class="resource-card-desc">
+                Daemon engineering and protocol layer for orchestrating fleets of autonomous coding agents against shared issue trackers and structured repository context.
+              </p>
+            </div>
+            <div class="resource-card-footer">
+              <span>View on GitHub</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </div>
+          </a>
+
+          <a href="https://antigravity.google/docs" class="resource-card" target="_blank" rel="noopener noreferrer">
+            <div>
+              <div class="resource-card-meta">
+                <span class="resource-kind-tag">Developer Platform</span>
+                <span class="resource-author">Google Antigravity</span>
+              </div>
+              <h4 class="resource-card-title">Google Antigravity Agentic Engineering Platform</h4>
+              <p class="resource-card-desc">
+                Developer guide covering multi-agent platforms, workspace sandbox boundaries, skill customization protocols (<code>SKILL.md</code>), and session lifecycle hooks.
+              </p>
+            </div>
+            <div class="resource-card-footer">
+              <span>Explore Antigravity Docs</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </div>
+          </a>
+
+          <a href="https://matklad.github.io/2021/02/06/ARCHITECTURE.md.html" class="resource-card" target="_blank" rel="noopener noreferrer">
+            <div>
+              <div class="resource-card-meta">
+                <span class="resource-kind-tag">Architecture Pattern</span>
+                <span class="resource-author">Alex Kladov (matklad)</span>
+              </div>
+              <h4 class="resource-card-title">ARCHITECTURE.md: Codemaps for Complex Systems</h4>
+              <p class="resource-card-desc">
+                Foundational pattern for establishing physical repository maps and architectural invariants—now standard practice for anchoring AI coding agents to project boundaries.
+              </p>
+            </div>
+            <div class="resource-card-footer">
+              <span>Read matklad's Article</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </div>
+          </a>
+
+          <a href="https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/" class="resource-card" target="_blank" rel="noopener noreferrer">
+            <div>
+              <div class="resource-card-meta">
+                <span class="resource-kind-tag">Design Principle</span>
+                <span class="resource-author">Alexis King (lexi-lambda)</span>
+              </div>
+              <h4 class="resource-card-title">Parse, Don't Validate: Type-Driven Invariants</h4>
+              <p class="resource-card-desc">
+                The philosophy behind strict YAML frontmatter validation: transforming unverified strings into structured types at system boundaries so downstream code never operates on invalid data.
+              </p>
+            </div>
+            <div class="resource-card-footer">
+              <span>Read lexi-lambda's Post</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </div>
+          </a>
+        </div>
+      </details>
+    </section>
+
+    <!-- Section 7: Searchable A–Z Plain-English Dictionary (Collapsible Accordion, Open by Default) -->
+    <section id="glossary" class="guide-section" style="border-bottom: none;" aria-labelledby="heading-glossary">
+      <details id="glossary-accordion" class="glossary-accordion" open>
+        <summary class="glossary-summary">
+          <div class="glossary-summary-text">
+            <h2 id="heading-glossary">Plain-English Dictionary of Technical Terms</h2>
+            <span class="glossary-summary-badge">25 terms · Click to expand or collapse</span>
+          </div>
+          <span class="glossary-chevron" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </span>
+        </summary>
+
+        <div class="glossary-body">
+          <div class="prose-block" style="margin-bottom: 1.25rem;">
+            <p style="margin: 0;">
+              Every term available via mouse hover and mobile tap across this guide is also collected below so you can search or browse them all in one place.
+            </p>
+          </div>
+
+          <div class="glossary-toolbar">
+            <input
+              type="search"
+              id="glossary-search"
+              class="glossary-search-input"
+              placeholder="Search terms (e.g., YAML, Vector, Token, Provenance)..."
+              aria-label="Filter dictionary terms"
+            >
+            <span id="glossary-count" style="font-size: 0.88rem; color: var(--ink-muted);"></span>
+          </div>
+
+          <dl id="glossary-list" class="glossary-dl"></dl>
+        </div>
+      </details>
+    </section>
+
+    <footer class="site-footer">
+      <div>
+        <strong>Open Knowledge Format (OKF) Wiki Template</strong> · Released under the MIT License.
+      </div>
+      <div style="display: flex; gap: 0.85rem; flex-wrap: wrap;">
+        <a href="https://github.com/GoogleCloudPlatform/open-knowledge-format.git" target="_blank" rel="noopener noreferrer">Official Google Cloud OKF Repo</a>
+        ·
+        <a href="https://cloud.google.com/blog/products/data-analytics/how-the-open-knowledge-format-can-improve-data-sharing" target="_blank" rel="noopener noreferrer">Google Cloud Blog</a>
+        ·
+        <a href="https://github.com/Blackx16/okf-wiki-template" target="_blank" rel="noopener noreferrer">Template GitHub Repo</a>
+        ·
+        <a href="#top">Back to top</a>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- Shared Universal Dictionary Popover (Desktop Hover + Keyboard Focus + Mobile Tap) -->
+  <div id="dict-popover" class="dict-popover" popover="manual" role="dialog" aria-labelledby="dict-title" aria-hidden="true">
+    <div class="dict-popover-inner">
+      <div class="dict-popover-header">
+        <div>
+          <span id="dict-category" class="dict-popover-category">Concept</span>
+          <h3 id="dict-title" class="dict-popover-title" style="margin-top: 0.25rem;">Term</h3>
+        </div>
+        <button type="button" id="dict-close-btn" class="dict-popover-close" aria-label="Close definition card">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <p id="dict-meaning" class="dict-popover-meaning"></p>
+      <div id="dict-analogy" class="dict-popover-box"></div>
+      <div id="dict-repo" class="dict-popover-box"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
